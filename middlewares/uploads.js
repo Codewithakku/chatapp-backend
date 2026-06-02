@@ -9,6 +9,10 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
 }
 
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
 // Set up Multer storage
 const storage = multer.diskStorage({          
     destination: function (req, file, cb) {             //destination : for Folder where files are saved
@@ -27,7 +31,19 @@ const fileFilter = (req, file, cb) => {         //fileFilter for  accept or reje
     const ext = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mime = allowedTypes.test(file.mimetype);
 
-    if (ext && mime) {
+     if (ext && mime) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+
+  if (ext && mime) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only image files are allowed'));
+    }
+
+  if (ext && mime) {
       cb(null, true);
     } else {
       cb(new Error('Only image files are allowed'));
