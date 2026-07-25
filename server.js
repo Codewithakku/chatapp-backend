@@ -23,13 +23,13 @@ const allowedOrigins = [
 // ✅ Allow frontend domain (Vercel) — REQUIRED for CORS and Socket.IO
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Allow during production connection tests
-    }
+    if (!origin) return callback(null, true);
+    // Dynamically reflect origin to allow Vercel previews & production
+    return callback(null, origin);
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());
@@ -50,7 +50,7 @@ const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: (origin, callback) => callback(null, origin || true),
     methods: ['GET', 'POST'],
     credentials: true
   }
