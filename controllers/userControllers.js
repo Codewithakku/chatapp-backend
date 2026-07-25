@@ -54,7 +54,7 @@ exports.loginUser = (req, res) => {
 
   // 2) Check user existence
   const query = 'SELECT * FROM users WHERE email = ? LIMIT 1';
-  db.query(query, [email],async (err, results) => {
+  db.query(query, [email], async (err, results) => {
     if (err) {
       console.error('DB error:', err);
       return res.status(500).json({ error: 'Internal server error' });

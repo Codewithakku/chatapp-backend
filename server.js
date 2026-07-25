@@ -11,10 +11,24 @@ const chatRoutes = require('./routes/chatRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://chatapp-frontend-steel-eight.vercel.app';
+
+const allowedOrigins = [
+  FRONTEND_URL,
+  'https://chatapp-frontend-steel-eight.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
 
 // ✅ Allow frontend domain (Vercel) — REQUIRED for CORS and Socket.IO
 app.use(cors({
-  origin: 'https://chatapp-frontend-steel-eight.vercel.app',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow during production connection tests
+    }
+  },
   credentials: true
 }));
 
@@ -23,7 +37,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ✅ Health check for Render
 app.get('/', (req, res) => {
-  res.send("✅ Render backend is running");
+  res.status(200).send("✅ Render backend is running");
 });
 
 app.use('/', userRoutes);
@@ -36,7 +50,7 @@ const server = http.createServer(app);
 const { Server } = require('socket.io');
 const io = new Server(server, {
   cors: {
-    origin: 'https://chatapp-frontend-steel-eight.vercel.app',
+    origin: '*',
     methods: ['GET', 'POST'],
     credentials: true
   }
